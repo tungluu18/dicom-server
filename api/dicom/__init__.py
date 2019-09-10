@@ -26,8 +26,14 @@ def save_data_annotate():
     if (not os.path.exists(path_to_foder_deviceID)):
         os.makedirs(path_to_foder_deviceID, exist_ok=True)
 
-    file_name = f'{file_name}_{datetime.datetime.now().strftime("%s")}.json'
-    file_path = f'{path_to_foder_deviceID}/{file_name}'
+    file_name = "{file_name}_{timestamp}.json".format(
+        file_name=file_name,
+        timestamp=datetime.datetime.now().strftime("%s")
+    )
+    file_path = "{path}/{file_name}".format(
+        path=path_to_foder_deviceID,
+        file_name=file_name
+    )
 
     Dicom.save_data_annotate(pathFile=file_path, **value)
 
