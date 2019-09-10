@@ -24,7 +24,7 @@ class Signup(Resource, BaseApi):
             return self.api_response(data=user_schema.dump(new_user).data)
         except Exception as e:
             _logger.error(e)
-            return self.api_response(handled_error=e)
+            return self.api_response(http_code=500, handled_error=e)
 
     @staticmethod
     def _validate(req):
