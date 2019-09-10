@@ -11,12 +11,12 @@ __author__ = 'Tung.Luu'
 _logger = logging.getLogger(__name__)
 
 
-change_password_fields = api.model('change_password_fields', {
+change_password_fields = api.model('change_password_form', {
     'old_password': fields.String(),
     'new_password': fields.String()
 })
 
-reset_password_fields = api.model('reset_password_fields', {
+reset_password_fields = api.model('reset_password_form', {
     'new_password': fields.String()
 })
 

@@ -1,5 +1,4 @@
 # coding=utf-8
-
 import logging
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -11,7 +10,6 @@ _logger = logging.getLogger(__name__)
 db = SQLAlchemy()
 ma = Marshmallow()
 migrate = Migrate(db=db)
-
 
 def init_app(app):
     """
@@ -29,7 +27,4 @@ def init_app(app):
 
 from model.basemodel import Basemodel
 from model.user import User
-from model.session import Session
-from model.video import Video
-
-
+from model.dicom import Dicom

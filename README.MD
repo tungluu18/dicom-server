@@ -11,7 +11,7 @@
 > pip3 install -r requirements.txt
 ### Nếu sử dụng mysql server trên máy
 #### Cấu hình app: tạo file .env trong trong folder root của project, định nghĩa các giá trị sau
-##### Cấu hình database trong .env
+##### Cấu hình database trong .env (ví dụ có trong file .env.example)
     DB_USER=Tên một người dùng trên database
     DB_PWD=Mật khẩu của người dùng đó
     DB_HOST=Địa chỉ host của database
@@ -32,19 +32,13 @@ Trường hợp chạy app bị lỗi liên quan đến khóa sha256:
 > Nhập mật khẩu 'tungluu18'
 
 #### Khởi tạo database
-> python3 init_db.py
-
-#### Seed dữ liệu người dùng (test only)
-> python3 seed_db.py
-(Mật khẩu mặc định là 123456
+> flask db upgrade
 
 ### Chạy app
-> ./start.sh
-hoặc
->./start_wsgi.sh
+> ./start_prod.sh (production mode)
 
 #### Kiểm tra
 > http://127.0.0.1:5000/api/v1
 
-#### Trang quản lý của admin
+#### Trang quản lý của admin (deprecated)
 > http://127.0.0.1:5000/website/admin/homepage

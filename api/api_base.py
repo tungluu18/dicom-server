@@ -1,31 +1,19 @@
 # coding=utf-8
-
 import logging
 from flask_restplus import fields
 from api import api
+from helpers.error_handler_helper import HandledError
 
 __author__ = 'Tung.Luu'
 _logger = logging.getLogger(__name__)
 
 
-class HandledError(Exception):
-    def __init__(self, error_code, message):
-        self.error_code = error_code
-        self.message = message
-
-    def __str__(self):
-        return 'Error code [%s]: %s' % (self.error_code, self.message)
-
-    def __repr__(self):
-        return 'Error code [%s]: %s' % (self.error_code, self.message)
-
+GENERAL_RESP = api.model('GENERAL_RESP', {
+    'error': fields.Integer(),
+    'data': fields.String()
+})
 
 class BaseApi(object):
-    GENERAL_RESP = api.model('GENERAL_RESP', {
-        'error': fields.Integer(),
-        'data': fields.String()
-    })
-
     @staticmethod
     def api_response(http_code=200, data=None, error=None, handled_error=None):
         """ Return http response
@@ -39,7 +27,7 @@ class BaseApi(object):
             error = error or 'Internal server error!'
         if http_code == 200:
             data = data or 'Success'
-        return {
-            'error': error,
-            'data': data
-        }, http_code
+        return (
+            {'error': error, 'data': data},
+            http_code
+        )

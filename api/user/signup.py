@@ -1,44 +1,32 @@
 # coding=utf-8
 
 import logging
-import json
 from flask import request
 from flask_restplus import Resource, fields
-from api.user import api, user_fields
 from api.api_base import BaseApi
+from api.user import models as api_models, api
 from model import db
-from model.user import User as UserModel
-import util
+from model.user import User as UserModel, UserSchema
 
 __author__ = 'Tung.Luu'
 _logger = logging.getLogger(__name__)
 
+user_schema = UserSchema()
 
 @api.route('/signup')
 class Signup(Resource, BaseApi):
     @api.doc(description='Đăng ký tài khoản')
-    @api.expect(user_fields)
+    @api.expect(api_models.signup, validate=True)
     def post(self):
+        body = self._validate(request.json)
         try:
-            signup_args = util.valid_req(
-                request,
-                comp_attr=['username', 'password', 'email'],
-                ext_attr=['job', 'organization', 'phone', 'address', 'department'])
-        except ValueError as err:
-            return self.api_response(error=str(err), http_code=400)
-
-        # check if username is existed
-        if UserModel.is_existed(signup_args['username']):
-            return self.api_response(error='Tên tài khoản đã tồn tại',
-                                     http_code=400)
-
-        try:
-            new_user = UserModel(**signup_args)
-            db.session.add(new_user)
-            db.session.commit()
-            return self.api_response(data="Success")
+            new_user = UserModel.create(**body)
+            return self.api_response(data=user_schema.dump(new_user).data)
         except Exception as e:
             _logger.error(e)
-            db.session.rollback()
-            return self.api_response(error='Internal server error!',
-                                     http_code=500)
+            return self.api_response(handled_error=e)
+
+    @staticmethod
+    def _validate(req):
+        valid_keys = api_models.signup.keys()
+        return {key: value for key, value in req.items() if key in valid_keys}

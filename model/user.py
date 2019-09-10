@@ -1,9 +1,11 @@
 # coding=utf-8
 
 import logging
-from model import db, Basemodel, ma
 from flask_bcrypt import generate_password_hash, \
     check_password_hash
+from sqlalchemy import or_
+from model import db, Basemodel, ma
+from helpers.error_handler_helper import HandledError
 
 __author__ = 'Tung.Luu'
 _logger = logging.getLogger(__name__)
@@ -11,38 +13,50 @@ _round_number = 10
 
 
 class User(Basemodel):
-    __tablename__ = 'user'
-
-    username = db.Column(db.String(length=255, collation='utf8_general_ci'), primary_key=True, unique=True)
+    __tablename__ = 'users'
+    fullname = db.Column(db.String(
+        length=100, collation='utf8mb4_general_ci'), unique=True, nullable=False)
+    phone = db.Column(db.String(255), primary_key=True,
+                      unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    email = db.Column(db.String(255), primary_key=True, nullable=False)
-    phone = db.Column(db.String(255), nullable=True)
-    address = db.Column(db.String(length=255, collation='utf8_general_ci'), nullable=True)
-    organization = db.Column(db.String(length=255, collation='utf8_general_ci'), nullable=True)
-    department = db.Column(db.String(length=255, collation='utf8_general_ci'), nullable=True)
-    job = db.Column(db.String(length=255, collation='utf8_general_ci'), nullable=True)
-    status = db.Column(db.String(length=20), default='inactive', nullable=False)
+    deviceID = db.Column(db.String(50))
+    email = db.Column(db.String(255), nullable=False)
+    job = db.Column(
+        db.String(length=255, collation='utf8mb4_general_ci'))
+    department = db.Column(
+        db.String(length=255, collation='utf8mb4_general_ci'))
+    organization = db.Column(
+        db.String(length=255, collation='utf8mb4_general_ci'))
+    address = db.Column(
+        db.String(length=255, collation='utf8mb4_general_ci'))
+    activate = db.Column(db.Boolean, default=False)
 
-    def __init__(self, username, email, password,
-                 job=None, address=None,
-                 phone=None, organization=None,
-                 department=None):
-        self.username = username
-        self.email = email
-        self.password = self._encrypt_password(password)
-        self.job = job
+    def __init__(self,
+                 email,
+                 phone,
+                 fullname,
+                 password,
+                 activate=True,
+                 job=None,
+                 address=None,
+                 deviceID=None,
+                 department=None,
+                 organization=None):
+        self.fullname = fullname
         self.phone = phone
-        self.address = address
-        self.organization = organization
+        self.password = self._encrypt_password(password)
+        self.deviceID = deviceID
+        self.email = email
+        self.job = job
         self.department = department
-
-    @classmethod
-    def is_existed(self, username):
-        return bool(self.query.filter_by(username=username).first())
+        self.organization = organization
+        self.address = address
+        self.activate = activate
 
     def is_active(self):
-        if self.status != 'active':
-            raise ValueError('User %s has not been activated by admin.' % (self.username))
+        if self.activate != 'active':
+            raise ValueError(
+                'User %s has not been activated by admin.' % (self.fullname))
         return True
 
     @staticmethod
@@ -54,6 +68,23 @@ class User(Basemodel):
     @staticmethod
     def _check_password(pw_hash, pw_raw):
         return check_password_hash(pw_hash, pw_raw)
+
+    @classmethod
+    def create(self, *args, **kwargs):
+        if bool(self.query.filter(or_(
+            User.phone == kwargs['phone'],
+            User.fullname == kwargs['fullname']
+        )).first()):
+            raise HandledError(message='existed_phone_number_or_fullname', error_code=400)
+        try:
+            new_user = User(**kwargs)
+            db.session.add(new_user)
+            db.session.commit()
+            return new_user
+        except Exception as e:
+            _logger.error(e)
+            db.session.rollback()
+            raise e
 
 
 class UserSchema(ma.ModelSchema):

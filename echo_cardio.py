@@ -6,7 +6,7 @@ from flask_cors import CORS
 
 import model
 from api import api_blueprint
-from web import web_blueprint
+# from web import web_blueprint
 
 __author__ = 'Tung.Luu'
 _logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ model.init_app(app)
 app.register_blueprint(api_blueprint)
 
 # add blueprint web templates
-app.register_blueprint(web_blueprint)
+# app.register_blueprint(web_blueprint)
 
 # serve files
 @app.route('/data/<path:filename>')
@@ -38,7 +38,7 @@ def redirect_to_blueprint():
     return redirect(api_blueprint.url_prefix)
 
 # cross origin resource sharing
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.logger.handlers.extend(_logger.handlers)
 app.logger.setLevel(logging.DEBUG)

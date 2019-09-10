@@ -11,7 +11,8 @@ _logger = logging.getLogger(__name__)
 api_blueprint = Blueprint(
     'blueprint',
     __name__,
-    url_prefix='/api/v1')
+    url_prefix='/api/v1'
+)
 
 api = Api(
     app=api_blueprint,
@@ -19,10 +20,8 @@ api = Api(
     version='1.0'
 )
 
-from api.session import api as api_session
+from api.api_base import BaseApi
 from api.user import api as api_user
-from api.store import api as api_store
+from api.dicom import *
 
 api.add_namespace(api_user)
-api.add_namespace(api_session)
-api.add_namespace(api_store)
