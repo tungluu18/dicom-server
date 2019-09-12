@@ -15,7 +15,7 @@ _round_number = 10
 class User(Basemodel):
     __tablename__ = 'users'
     fullname = db.Column(db.String(
-        length=100, collation='utf8mb4_general_ci'), unique=True, nullable=False)
+        length=100, collation='utf8mb4_general_ci'), nullable=False)
     phone = db.Column(db.String(255), primary_key=True,
                       unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
@@ -71,11 +71,8 @@ class User(Basemodel):
 
     @classmethod
     def create(self, *args, **kwargs):
-        if bool(self.query.filter(or_(
-            User.phone == kwargs['phone'],
-            User.fullname == kwargs['fullname']
-        )).first()):
-            raise HandledError(message='existed_phone_number_or_fullname', error_code=400)
+        if bool(self.query.filter_by(phone=kwargs['phone']).first()):
+            raise HandledError(message='existed_phone_number', error_code=400)
         try:
             new_user = User(**kwargs)
             db.session.add(new_user)
