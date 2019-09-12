@@ -2,8 +2,10 @@
 
 import logging
 from flask_restplus import Api
-from flask import Blueprint
+from flask import Blueprint, jsonify
 import config
+
+from services.dicom_service import Compressor
 
 __author__ = 'Tung.Luu'
 _logger = logging.getLogger(__name__)
@@ -25,3 +27,8 @@ from api.user import api as api_user
 from api.dicom import *
 
 api.add_namespace(api_user)
+
+@api_blueprint.route("/test", methods=["GET"])
+def test():
+    compressed_images = Compressor("./data/dicom_data", "F979KOS8").toJPEG()
+    return jsonify(compressed_images)
