@@ -1,5 +1,6 @@
 # coding=utf-8
 import logging
+import datetime
 import urllib.parse
 from flask import request, jsonify
 from model import Annotation
@@ -17,6 +18,7 @@ def save_data_annotate():
     if '..' in file_name:
         return abort(400)
     try:
+        req_body["timestamp"] = datetime.datetime.now().strftime("%s")
         savedfile_path, savedfile_location = Annotation.save(req_body)
         print("Saved file: {}".format(savedfile_path))
         _logger.info("Save file: {}".format(savedfile_path))
