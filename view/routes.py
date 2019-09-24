@@ -7,6 +7,7 @@ _logger = logging.getLogger(__name__)
 routing_table = dict({
     'admin': dict({
         'homepage': '/admin/homepage',
+        'dashboard': '/admin/dashboard',
         'activate': '/admin/activate/user',
         'delete': '/admin/delete/user',
         'update': '/admin/update/user',

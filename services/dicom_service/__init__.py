@@ -3,4 +3,6 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 from .compress import Compressor
+from . import stat

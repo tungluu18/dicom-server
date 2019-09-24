@@ -6,7 +6,7 @@ from flask_cors import CORS
 
 import model
 from api import api_blueprint
-# from web import web_blueprint
+from view import view_blueprint
 
 __author__ = 'Tung.Luu'
 _logger = logging.getLogger(__name__)
@@ -22,8 +22,9 @@ model.init_app(app)
 # add blueprint apis
 app.register_blueprint(api_blueprint)
 
-# add blueprint web templates
-# app.register_blueprint(web_blueprint)
+# add blueprint web views
+app.register_blueprint(view_blueprint)
+
 
 # serve files
 @app.route('/data/<path:filename>')
@@ -36,6 +37,7 @@ def download_file(filename):
 @app.route('/api')
 def redirect_to_blueprint():
     return redirect(api_blueprint.url_prefix)
+
 
 # cross origin resource sharing
 CORS(app, resources={r"/*": {"origins": "*"}})

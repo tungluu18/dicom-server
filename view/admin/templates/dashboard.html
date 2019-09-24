@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="/static/cardiogram.png">
+    <link rel=stylesheet type=text/css href="/static/bootstrap.min.css">
+    <title>Dashboard</title>
+    <script src="/static/popper.min.js"></script>
+    <script src="/static/jquery-3.3.1.slim.min.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="w-100 p-2 my-2 border-bottom page-header">
+        <h3>Dashboard</h3>
+    </div>
+    <div class="container">
+        <nav class="my-2">
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="nav-overview-tab" data-toggle="tab" href="#nav-overview"
+                    role="tab" aria-controls="nav-overview" aria-selected="true">Overview</a>
+                <a class="nav-item nav-link" id="nav-date-and-user-tab" data-toggle="tab" href="#nav-date-and-user"
+                    role="tab" aria-controls="nav-date-and-user" aria-selected="false">Group by date and user </a>
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
+                <table class="table table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">User</th>
+                            <th scope="col">Device</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Number of frames</th>
+                            <!-- <th scope="col">Number of dicoms</th> -->
+                            <th scope="col">Path</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+                        {% for row in data[0] %}
+                        <tr>
+                            {% set rowloop = loop %}
+                            <th scope="row">{{rowloop.index}}</th>
+                            <td>{{row.user}}</td>
+                            <td>{{row.device}}</td>
+                            <td>{{row.date}}</td>
+                            <td>{{row.nframe}}</td>
+                            <td>
+                                <a href={{row.url}} target="_blank">{{row.path}}</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="nav-date-and-user" role="tabpanel" aria-labelledby="nav-date-and-user-tab">
+                <table class="table table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">User</th>
+                            <th scope="col">Device</th>
+                            <th scope="col">Number of frames</th>
+                            <th scope="col">Number of dicoms</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+                        {% for row in data[1] %}
+                        <tr>
+                            {% set rowloop = loop %}
+                            <th scope="row">{{rowloop.index}}</th>
+                            <td>{{row.date}}</td>
+                            <td>{{row.user}}</td>
+                            <td>{{row.device}}</td>
+                            <td>{{row.nframe}}</td>
+                            <td>{{row.dicoms}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

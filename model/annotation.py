@@ -38,26 +38,38 @@ class Annotation(Basemodel):
             "/storage/emulated/0/Download/", "").replace("/", "__")
         deviceID = str(annotate_data.get("deviceID", "nodevice"))
         path_to_foder_deviceID = "./data/json_data/" + deviceID
-        file_name = "{}_{}.json".format(
+
+        os.makedirs(path_to_foder_deviceID, exist_ok=True)
+        os.makedirs(
+            os.path.join(path_to_foder_deviceID, "versions"),
+            exist_ok=True
+        )
+
+        file_name_main = "{}.json".format(file_name)
+        file_location_main = "{}/{}".format(
+            path_to_foder_deviceID, file_name_main)
+        file_name_version = "{}_{}.json".format(
             file_name, datetime.datetime.now().strftime("%s"))
-        file_location = "{}/{}".format(path_to_foder_deviceID, file_name)
+        file_location_version = "{}/versions/{}".format(
+            path_to_foder_deviceID, file_name_version)
 
         try:
-            # check folder not exist then create
-            if (not os.path.exists(path_to_foder_deviceID)):
-                os.makedirs(path_to_foder_deviceID, exist_ok=True)
-            savefile = open(file_location, "w")
+            savefile = open(file_location_version, "w")
+            savefile.write(json.dumps(annotate_data))
+            savefile.close()
+
+            savefile = open(file_location_main, "w")
             savefile.write(json.dumps(annotate_data))
             savefile.close()
 
             annotattion = Annotation(
                 deviceID=deviceID, file_path=file_path,
-                file_location=file_location
+                file_location=file_location_version
             )
             db.session.add(annotattion)
             db.session.commit()
 
-            return file_path, file_location
+            return file_path, file_location_version
         except Exception as e:
             _logger.error(e)
             db.session.rollback()

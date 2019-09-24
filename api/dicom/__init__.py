@@ -24,4 +24,5 @@ def save_data_annotate():
             request.host_url, savedfile_location
         ))
     except Exception as e:
+        _logger.error(e)
         return {'error': e}, 500
