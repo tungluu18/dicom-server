@@ -28,7 +28,7 @@ from api.dicom import *
 
 api.add_namespace(api_user)
 
-@api_blueprint.route("/test", methods=["GET"])
-def test():
-    compressed_images = Compressor("./data/dicom_data", "F979KOS8").toJPEG()
-    return jsonify(compressed_images)
+# @api_blueprint.route("/test", methods=["GET"])
+# def test():
+#     compressed_images = Compressor("./data/dicom_data", "F979KOS8").toJPEG()
+#     return jsonify(compressed_images)

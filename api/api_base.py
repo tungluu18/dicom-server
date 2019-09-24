@@ -13,6 +13,7 @@ GENERAL_RESP = api.model('GENERAL_RESP', {
     'data': fields.String()
 })
 
+
 class BaseApi(object):
     @staticmethod
     def api_response(http_code=200, data=None, error=None, handled_error=None):

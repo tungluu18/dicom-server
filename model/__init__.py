@@ -28,3 +28,4 @@ def init_app(app):
 from model.basemodel import Basemodel
 from model.user import User
 from model.dicom import Dicom
+from model.annotation import Annotation
