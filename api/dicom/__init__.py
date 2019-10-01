@@ -23,7 +23,7 @@ def save_data_annotate():
         print("Saved file: {}".format(savedfile_path))
         _logger.info("Save file: {}".format(savedfile_path))
         return jsonify(data=urllib.parse.urljoin(
-            request.host_url, savedfile_location
+            request.host_url, urllib.parse.quote(savedfile_location)
         ))
     except Exception as e:
         _logger.error(e)

@@ -1,3 +1,4 @@
+APScheduler==3.6.1
 alembic==1.0.8
 aniso8601==5.1.0
 attrs==19.1.0

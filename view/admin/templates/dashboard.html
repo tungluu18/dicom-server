@@ -28,15 +28,32 @@
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane fade show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
+                <div class="d-flex justify-content-end mb-2">
+                    <div class="d-flex py-1" style="font-size: x-small;">
+                        {% for p in pagination.pages %}
+                        {% if p == None %}
+                        <p>......</p>
+                        {% elif p == pagination.current_page %}
+                        <a class="btn btn-sm btn-info mx-1" href="?page={{p}}" role="button" style="font-size: small;">{{p}}</a>
+                        {% else %}
+                        <a class="btn btn-sm btn-outline-info mx-1" href="?page={{p}}" role="button" style="font-size: small;">{{p}}</a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
                 <table class="table table-hover">
                     <thead class="thead-dark">
                         <tr>
-                            <th scope="col">#</th>
                             <th scope="col">User</th>
                             <th scope="col">Device</th>
                             <th scope="col">Date</th>
                             <th scope="col">Number of frames</th>
-                            <th scope="col">Path</th>
+                            {% if show_path%}
+                            <th scope="col">Filepath</th>
+                            {% else %}
+                            <th scope="col">Filename</th>
+                            {% endif %}
                             <th scope="col">Dicom preview</th>
                         </tr>
                     </thead>
@@ -44,26 +61,27 @@
                         {% for row in data[0] %}
                         <tr>
                             {% set rowloop = loop %}
-                            <th scope="row">{{rowloop.index}}</th>
                             <td>{{row.user}}</td>
                             <td>{{row.device}}</td>
                             <td>{{row.date}}</td>
                             <td>{{row.nframe}}</td>
+                            {% if show_path %}
                             <td>
                                 <a href={{row.url}} target="_blank">{{row.path}}</a>
                             </td>
+                            {% else %}
+                            <td>{{row.filename}}</td>
+                            {% endif %}
                             <td>
                                 <div class="d-flex">
                                     <button type="button" class="m-1 btn btn-outline-primary btn-sm" data-toggle="modal"
                                         data-target="#dicom-gif-modal-{{rowloop.index}}">View</button>
                                     {% if row.gif_url %}
-                                    <button class="m-1 btn btn-outline-primary btn-sm">
-                                        <a href={{row.gif_url}} target="_blank"
-                                            download="{{row.gif_name}}">Download</a>
-                                    </button>
+                                    <a class="m-1 btn btn-outline-primary btn-sm" href={{row.gif_url}} target="_blank"
+                                        role="button" download="{{row.gif_name}}">Download</a>
                                     {% else %}
-                                    <a class="m-1 btn btn-outline-primary btn-sm disabled" area-disabled="true"
-                                        href={{row.gif_url}} target="_blank">
+                                    <a class="m-1 btn btn-outline-secondary btn-sm disabled" area-disabled="true"
+                                        href={{row.gif_url}} target="_blank" role="button">
                                         Download
                                     </a>
                                     {% endif %}

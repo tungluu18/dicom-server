@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import logging
-
+import math
 import json
 from flask import current_app as app
 
@@ -44,4 +44,18 @@ def valid_req(request, comp_attr=[], ext_attr=[]):
 
 def allowed_filename(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+           filename.rsplit('.', 1)[1].lower(
+           ) in app.config['ALLOWED_EXTENSIONS']
+
+
+def paginate(data, current_page=1, per_page=20):
+    offset = (current_page - 1) * per_page
+    n_pages = math.ceil(len(data) / per_page)
+    pages = [current_page - 2, current_page - 1,
+             current_page, current_page + 1, current_page + 2]
+    pages = list(filter(lambda x: 1 <= x and x <= n_pages, pages))
+    if pages[0] > 1:
+        pages = [1, None] + pages
+    if pages[-1] < n_pages:
+        pages = pages + [None, n_pages]
+    return data[offset:offset+per_page], current_page, pages

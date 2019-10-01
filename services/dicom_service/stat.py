@@ -80,48 +80,74 @@ STATS_FOLDER = './data/stats'
 ANNOTATION_FOLDER_DEFAULT = './data/json_data'
 
 
-def stat_on_folder(dest_folder=ANNOTATION_FOLDER_DEFAULT):
+def stat_on_folder(force=False, dest_folder=ANNOTATION_FOLDER_DEFAULT):
+    """ Description:
+            if `force` is True, run stat on json folder
+            if `force` is False, read stat data from existed csv files
+        Return (dataframe, dataframe):
+            stat data by overview and grouped by day and user
+    """
     if not os.path.exists(dest_folder):
         raise Exception("folder doesn't exist")
     if not os.path.exists(STATS_FOLDER):
         os.makedirs(STATS_FOLDER)
 
-    user_map = get_user_map()
-    stats_file = '{}/stats_{}.csv'
-    day_man_stats_file = '{}/day_man_stats_{}.csv'
-    print("processing folder:", dest_folder)
+    if not force:
+        # find existed stat file
+        stat_dir = os.path.abspath(STATS_FOLDER)
+        stats_file_list = glob.glob(os.path.join(stat_dir, 'stats*.csv'))
+        day_man_stats_file_list = glob.glob(
+            os.path.join(stat_dir, 'day_man_stats*.csv'))
+        # force to run stat on json folder
+        if len(stats_file_list) == 0 or len(day_man_stats_file_list) == 0:
+            return stat_on_folder(force=True, dest_folder=dest_folder)
+        # select lastest csv file to return stat data
+        last_stats_file = max(stats_file_list, key=get_timestamp)
+        df = pd.read_csv(last_stats_file)
+        overview = df.to_dict('records')
 
-    file_list = sorted(glob.glob(os.path.join(
-        dest_folder, "**", "*.json"), recursive=True))
-    # filter annotation files not in folder versions
-    file_list = [x for x in file_list if x.find("/versions/") == -1]
-    # convert relative path into absolute path
-    file_list = [os.path.abspath(x) for x in file_list]
-    dest_folder = os.path.abspath(dest_folder)
+        last_day_man_stats_file = max(
+            day_man_stats_file_list, key=get_timestamp)
+        df = pd.read_csv(last_day_man_stats_file)
+        by_date_and_user = df.to_dict('records')
+    else:
+        user_map = get_user_map()
+        stats_file = '{}/stats_{}.csv'
+        day_man_stats_file = '{}/day_man_stats_{}.csv'
+        print("processing folder:", dest_folder)
 
-    nframe = [get_nframe(x) for x in file_list]
-    device = [get_device(x, dest_folder) for x in file_list]
-    timestamp = [get_timestamp(x) for x in file_list]
-    user = [get_user(user_map, d) for d in device]
-    count = [1 for _ in file_list]
-    df = pd.DataFrame.from_dict({
-        'user': user,
-        'device': device,
-        'date': [get_date(x) for x in timestamp],
-        'nframe': nframe,
-        'dicoms': count,
-        'path': [get_relative_path(x, dest_folder) for x in file_list],
-    })
+        file_list = sorted(glob.glob(os.path.join(
+            dest_folder, "**", "*.json"), recursive=True))
+        # filter annotation files not in folder versions
+        file_list = [x for x in file_list if x.find("/versions/") == -1]
+        # convert relative path into absolute path
+        file_list = [os.path.abspath(x) for x in file_list]
+        dest_folder = os.path.abspath(dest_folder)
 
-    now = time.strftime("%Y-%m-%d", time.gmtime(time.time()))
-    df.to_csv(stats_file.format(STATS_FOLDER, now), index_label='#')
-    # stat by man and day
-    day_man_df = df.groupby(['date', 'user', 'device']).sum()
-    day_man_df.to_csv(
-        day_man_stats_file.format(STATS_FOLDER, now),
-        index_label=['date', 'user', 'device']
-    )
-    # convert dataframe into table
-    overview = df.reset_index().to_dict('records')
-    by_date_and_user = day_man_df.reset_index().to_dict('records')
+        nframe = [get_nframe(x) for x in file_list]
+        device = [get_device(x, dest_folder) for x in file_list]
+        timestamp = [get_timestamp(x) for x in file_list]
+        user = [get_user(user_map, d) for d in device]
+        count = [1 for _ in file_list]
+        df = pd.DataFrame.from_dict({
+            'user': user,
+            'device': device,
+            'date': [get_date(x) for x in timestamp],
+            'nframe': nframe,
+            'dicoms': count,
+            'path': [get_relative_path(x, dest_folder) for x in file_list],
+        })
+
+        now = time.strftime("%Y-%m-%d", time.gmtime(time.time()))
+        df.to_csv(stats_file.format(STATS_FOLDER, now), index_label='#')
+        # stat by man and day
+        day_man_df = df.groupby(['date', 'user', 'device']).sum()
+        day_man_df.to_csv(
+            day_man_stats_file.format(STATS_FOLDER, now),
+            index_label=['date', 'user', 'device']
+        )
+        # convert dataframe into table
+        overview = df.reset_index().to_dict('records')
+        by_date_and_user = day_man_df.reset_index().to_dict('records')
+
     return overview, by_date_and_user
