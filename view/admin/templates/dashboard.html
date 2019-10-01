@@ -36,8 +36,8 @@
                             <th scope="col">Device</th>
                             <th scope="col">Date</th>
                             <th scope="col">Number of frames</th>
-                            <!-- <th scope="col">Number of dicoms</th> -->
                             <th scope="col">Path</th>
+                            <th scope="col">Dicom preview</th>
                         </tr>
                     </thead>
                     <tbody class="tbody">
@@ -52,11 +52,52 @@
                             <td>
                                 <a href={{row.url}} target="_blank">{{row.path}}</a>
                             </td>
+                            <td>
+                                <div class="d-flex">
+                                    <button type="button" class="m-1 btn btn-outline-primary btn-sm" data-toggle="modal"
+                                        data-target="#dicom-gif-modal-{{rowloop.index}}">View</button>
+                                    {% if row.gif_url %}
+                                    <button class="m-1 btn btn-outline-primary btn-sm">
+                                        <a href={{row.gif_url}} target="_blank"
+                                            download="{{row.gif_name}}">Download</a>
+                                    </button>
+                                    {% else %}
+                                    <a class="m-1 btn btn-outline-primary btn-sm disabled" area-disabled="true"
+                                        href={{row.gif_url}} target="_blank">
+                                        Download
+                                    </a>
+                                    {% endif %}
+
+                                    <div class="modal fade dicom-gif-modal" id="dicom-gif-modal-{{rowloop.index}}"
+                                        tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                {% if row.gif_url %}
+                                                <div class="modal-body">
+                                                    <img class="lazy-load" data-src={{row.gif_url}}
+                                                        style="width: 100%; " />
+                                                </div>
+                                                {% else %}
+                                                <div class="m-2">
+                                                    NO DICOM FILE IN DATABASE
+                                                </div>
+                                                {% endif %}
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                                                        data-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+
             <div class="tab-pane fade" id="nav-date-and-user" role="tabpanel" aria-labelledby="nav-date-and-user-tab">
                 <table class="table table-hover">
                     <thead class="thead-dark">
@@ -87,6 +128,15 @@
         </div>
     </div>
 
+    <script>
+        // lazy loading gif on modal
+        $('.dicom-gif-modal').on("show.bs.modal", function (ev) {
+            // console.log("loading...", ev.currentTarget);
+            var img = $(ev.currentTarget).find("img[data-src]");
+            img.attr("src", img.data("src"));
+            img.removeAttr("data-src")
+        });
+    </script>
 </body>
 
 </html>
