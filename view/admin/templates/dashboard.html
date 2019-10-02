@@ -28,33 +28,32 @@
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane fade show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
-                <div class="d-flex justify-content-end mb-2">
-                    <div class="d-flex py-1" style="font-size: x-small;">
-                        {% for p in pagination.pages %}
-                        {% if p == None %}
-                        <p>......</p>
-                        {% elif p == pagination.current_page %}
-                        <a class="btn btn-sm btn-info mx-1" href="?page={{p}}" role="button" style="font-size: small;">{{p}}</a>
-                        {% else %}
-                        <a class="btn btn-sm btn-outline-info mx-1" href="?page={{p}}" role="button" style="font-size: small;">{{p}}</a>
-                        {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <table class="table table-hover">
-                    <thead class="thead-dark">
+                <table class="table table-sm table-striped table-hover table-bordered">
+                    <thead>
                         <tr>
-                            <th scope="col">User</th>
-                            <th scope="col">Device</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Number of frames</th>
+                            <th style="width: 15%;" class="th-sm" scope="col">User</th>
+                            <th class="th-sm" scope="col">Device</th>
+                            <th style="width: 20%;" class="th-sm" scope="col">
+                                <div class="dropdown">
+                                    <div class="dropdown-toggle" id="overviewDateSort" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Date
+                                    </div>
+                                    <div class="dropdown-menu" aria-labelledby="overviewDateSort">
+                                        <a class="dropdown-item"
+                                            href="?page=1&date_order=asc#nav-overview">Ascending</a>
+                                        <a class="dropdown-item"
+                                            href="?page=1&date_order=desc#nav-overview">Descending</a>
+                                    </div>
+                                </div>
+                            </th>
+                            <th style="width: 10%;" class="th-sm" scope="col">N frames</th>
                             {% if show_path%}
-                            <th scope="col">Filepath</th>
+                            <th class="th-sm" scope="col">Filepath</th>
                             {% else %}
-                            <th scope="col">Filename</th>
+                            <th class="th-sm" scope="col">Filename</th>
                             {% endif %}
-                            <th scope="col">Dicom preview</th>
+                            <th class="th-sm" scope="col">Dicom preview</th>
                         </tr>
                     </thead>
                     <tbody class="tbody">
@@ -114,18 +113,48 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-end mb-2">
+                    <div class="d-flex py-1" style="font-size: x-small;">
+                        {% for p in pagination.pages %}
+                        {% if p == None %}
+                        <p>......</p>
+                        {% elif p == pagination.current_page %}
+                        <a class="btn btn-sm btn-info mx-1"
+                            href="?tab={{selected_tab}}&page={{p}}&date_order={{date_order}}" role="button"
+                            style="font-size: small;">{{p}}</a>
+                        {% else %}
+                        <a class="btn btn-sm btn-outline-info mx-1"
+                            href="?tab={{selected_tab}}&page={{p}}&date_order={{date_order}}" role="button"
+                            style="font-size: small;">{{p}}</a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
 
             <div class="tab-pane fade" id="nav-date-and-user" role="tabpanel" aria-labelledby="nav-date-and-user-tab">
-                <table class="table table-hover">
-                    <thead class="thead-dark">
+                <table class="table table-sm table-striped table-hover table-bordered">
+                    <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Date</th>
+                            <th style="width: 10%;" class="th-sm" scope="col">
+                                <div class="dropdown">
+                                    <div class="dropdown-toggle" id="overviewDateSort" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Date
+                                    </div>
+                                    <div class="dropdown-menu" aria-labelledby="overviewDateSort">
+                                        <a class="dropdown-item"
+                                            href="?page=1&date_order=asc#nav-date-and-user">Ascending</a>
+                                        <a class="dropdown-item"
+                                            href="?page=1&date_order=desc#nav-date-and-user">Descending</a>
+                                    </div>
+                                </div>
+                            </th>
                             <th scope="col">User</th>
                             <th scope="col">Device</th>
-                            <th scope="col">Number of frames</th>
-                            <th scope="col">Number of dicoms</th>
+                            <th scope="col">N frames</th>
+                            <th scope="col">N dicoms</th>
                         </tr>
                     </thead>
                     <tbody class="tbody">
@@ -147,12 +176,30 @@
     </div>
 
     <script>
+        if (window.location.hash === "#nav-date-and-user") {
+            $('#nav-overview-tab').attr("class", "nav-item nav-link")
+            $('#nav-overview').attr("class", "tab-pane fade");
+            $('#nav-date-and-user-tab').attr("class", "nav-item nav-link active");
+            $('#nav-date-and-user').attr("class", "tab-pane fade show active");
+        }
         // lazy loading gif on modal
         $('.dicom-gif-modal').on("show.bs.modal", function (ev) {
             // console.log("loading...", ev.currentTarget);
             var img = $(ev.currentTarget).find("img[data-src]");
             img.attr("src", img.data("src"));
             img.removeAttr("data-src")
+        });
+        // update url when tab changed
+        $(function () {
+            var hash = window.location.hash;
+            hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+
+            $('.nav-tabs a').click(function (e) {
+                $(this).tab('show');
+                var scrollmem = $('body').scrollTop() || $('html').scrollTop();
+                window.location.hash = this.hash;
+                $('html,body').scrollTop(scrollmem);
+            });
         });
     </script>
 </body>

@@ -48,7 +48,6 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # setup logging
 logging.basicConfig(filename='vars/app.log', level=logging.DEBUG)
 app.logger.handlers.extend(_logger.handlers)
-app.logger.setLevel(logging.DEBUG)
 
 
 # scheduling jobs
