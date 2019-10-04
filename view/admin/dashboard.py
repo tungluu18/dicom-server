@@ -17,12 +17,14 @@ def dashboard():
     date_order = request.args.get('date_order', 'asc', type=str)
     # pagination
     page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    print(per_page)
     # load stat data
     overview, by_date_and_user = dicom_service.stat.stat_on_folder()
     overview.sort(key=lambda x: x['date'], reverse=(date_order == 'desc'))
     by_date_and_user.sort(
         key=lambda x: x['date'], reverse=(date_order == 'desc'))
-    overview, current_page, pages = util.paginate(overview, page)
+    overview, current_page, pages = util.paginate(overview, page, per_page)
     # get json and gif 's url
     for row in overview:
         row['url'] = urllib.parse.urljoin(
@@ -41,6 +43,7 @@ def dashboard():
         'data': (overview, by_date_and_user),
         'pagination': dict({
             'current_page': current_page,
+            'per_page': per_page,
             'pages': pages,
         }),
         'show_path': request.args.get('show_path', False, type=bool),

@@ -41,9 +41,9 @@
                                     </div>
                                     <div class="dropdown-menu" aria-labelledby="overviewDateSort">
                                         <a class="dropdown-item"
-                                            href="?page=1&date_order=asc#nav-overview">Ascending</a>
+                                            href="?page=1&per_page={{pagination.per_page}}&date_order=asc#nav-overview">Ascending</a>
                                         <a class="dropdown-item"
-                                            href="?page=1&date_order=desc#nav-overview">Descending</a>
+                                            href="?page=1&per_page={{pagination.per_page}}&date_order=desc#nav-overview">Descending</a>
                                     </div>
                                 </div>
                             </th>
@@ -113,22 +113,39 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <div class="d-flex justify-content-end mb-2">
-                    <div class="d-flex py-1" style="font-size: x-small;">
+                <div class="d-flex justify-content-between mt-2">
+                    <form class="d-flex align-items-start">
+                        <div class="input-group d-flex align-items-center">
+                            Show
+                            <!-- <div class="input-group-prepend">
+                                <button class="btn btn-primary btn-sm">Per page</button>
+                            </div> -->
+                            <input style="font-size: small;" class="form-control col-2" name="per_page"
+                                value={{pagination.per_page}} />
+                            entries
+                        </div>
+                    </form>
+                    <ul class="pagination">
                         {% for p in pagination.pages %}
                         {% if p == None %}
-                        <p>......</p>
+                        <li class="page-item">
+                            <p class="page-link" style="font-size: small;">......</p>
+                        </li>
                         {% elif p == pagination.current_page %}
-                        <a class="btn btn-sm btn-info mx-1"
-                            href="?tab={{selected_tab}}&page={{p}}&date_order={{date_order}}" role="button"
-                            style="font-size: small;">{{p}}</a>
+                        <li class="page-item active">
+                            <a class="page-link"
+                                href="?page={{p}}&per_page={{pagination.per_page}}&date_order={{date_order}}"
+                                style="font-size: small;">{{p}}</a>
+                        </li>
                         {% else %}
-                        <a class="btn btn-sm btn-outline-info mx-1"
-                            href="?tab={{selected_tab}}&page={{p}}&date_order={{date_order}}" role="button"
-                            style="font-size: small;">{{p}}</a>
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{p}}&per_page={{pagination.per_page}}&date_order={{date_order}}"
+                                style="font-size: small;">{{p}}</a>
+                        </li>
                         {% endif %}
                         {% endfor %}
-                    </div>
+                    </ul>
                 </div>
             </div>
 
