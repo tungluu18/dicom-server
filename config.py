@@ -15,6 +15,9 @@ ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_DIR = 'data'
 UPLOAD_DIR = 'data/tmp'
 GIF_DIR = 'data/gif_data'
+JSON_DATA_DIR = 'data/json_data'
+CONFIRM_DATA_DIR = 'data/confirm_data'
+
 
 # DATABASE
 _DB_NAME = os.getenv('DB_NAME', 'dicom_app')

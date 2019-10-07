@@ -11,11 +11,14 @@
     <script src="/static/popper.min.js"></script>
     <script src="/static/jquery-3.3.1.slim.min.js"></script>
     <script src="/static/bootstrap.min.js"></script>
+    <script src="/static/sweetalert.min.js"></script>
 </head>
 
 <body>
     <div class="w-100 p-2 my-2 border-bottom page-header">
-        <h3>Dashboard</h3>
+        <a href="?">
+            <h3>Dashboard</h3>
+        </a>
     </div>
     <div class="container">
         <nav class="my-2">
@@ -32,28 +35,97 @@
                     <thead>
                         <tr>
                             <th style="width: 15%;" class="th-sm" scope="col">User</th>
-                            <th class="th-sm" scope="col">Device</th>
-                            <th style="width: 20%;" class="th-sm" scope="col">
+                            <th class="th-sm" scope="col">
+                                <div class="dropdown">
+                                    <div class="dropdown-toggle" id="deviceSelector" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Device
+                                    </div>
+                                    <div class="dropdown-menu" aria-labelledby="deviceSelector">
+                                        {% for device in selectable_data.devices %}
+                                        {% if device == filters.device %}
+                                        <a class="dropdown-item active" href="#"
+                                            onclick="updateSearch(['device', 'page'], [null, null], many=true)">{{device}}</a>
+                                        {% else %}
+                                        <a class="dropdown-item" href="#"
+                                            onclick="updateSearch(['device', 'page'], ['{{device}}', null], many=true)">{{device}}</a>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </th>
+                            <th style="width: 20%; white-space: nowrap;" class="th-sm" scope="col">
                                 <div class="dropdown">
                                     <div class="dropdown-toggle" id="overviewDateSort" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
                                         Date
                                     </div>
                                     <div class="dropdown-menu" aria-labelledby="overviewDateSort">
-                                        <a class="dropdown-item"
-                                            href="?page=1&per_page={{pagination.per_page}}&date_order=asc#nav-overview">Ascending</a>
-                                        <a class="dropdown-item"
-                                            href="?page=1&per_page={{pagination.per_page}}&date_order=desc#nav-overview">Descending</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="updateSearch('date_order', 'asc')">Ascending</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="updateSearch('date_order', 'desc')">Descending</a>
                                     </div>
                                 </div>
                             </th>
-                            <th style="width: 10%;" class="th-sm" scope="col">N frames</th>
+                            <th style="width: 10%; white-space: nowrap;" class="th-sm" scope="col">N frames</th>
                             {% if show_path%}
                             <th class="th-sm" scope="col">Filepath</th>
                             {% else %}
                             <th class="th-sm" scope="col">Filename</th>
                             {% endif %}
-                            <th class="th-sm" scope="col">Dicom preview</th>
+                            <th style="white-space: nowrap; width: 10%;" class="th-sm" scope="col">
+                                <div class="dropdown">
+                                    <div class="dropdown-toggle" id="dicomAvaiSelector" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Dicom preview
+                                    </div>
+                                    <div class="dropdown-menu" aria-labelledby="dicomAvaiSelector">
+                                        {% if filters.dicom_avai %}
+                                        <a class="dropdown-item active" href="#"
+                                            onclick="updateSearch(['dicom_avai', 'page'], [null, null], many=true)">Only show available dicom files</a>
+                                        {% else %}
+                                        <a class="dropdown-item" href="#"
+                                            onclick="updateSearch(['dicom_avai', 'page'], [1, null], many=true)">Only show available dicom files</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </th>
+                            <th style="white-space: nowrap;" class="th-sm" scope="col">
+                                <div class="dropdown">
+                                    <div class="dropdown-toggle" id="checkSelector" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Check
+                                    </div>
+                                    <div class="dropdown-menu" aria-labelledby="checkSelector">
+                                        <a id="selectConfirmRej" class="dropdown-item" href="#"
+                                            onclick="updateSearch(['confirm', 'page'], [-1, null], many=true)">Rejected</a>
+                                        <a id="selectConfirmNot" class="dropdown-item" href="#"
+                                            onclick="updateSearch(['confirm', 'page'], [0, null], many=true)">Not
+                                            checked</a>
+                                        <a id="selectConfirmAcc" class="dropdown-item" href="#"
+                                            onclick="updateSearch(['confirm', 'page'], [1, null], many=true)">Accepted</a>
+                                        <script>
+                                            switch ({{filters.confirm}}) {
+                                                case -1:
+                                                    $("#selectConfirmRej").attr("class", "dropdown-item active");
+                                                    $("#selectConfirmRej").attr("onclick", "updateSearch(['confirm', 'page'], [null, null], many=true)");
+                                                    break;
+                                                case 0:
+                                                    $("#selectConfirmNot").attr("class", "dropdown-item active");
+                                                    $("#selectConfirmNot").attr("onclick", "updateSearch(['confirm', 'page'], [null, null], many=true)");
+                                                    break;
+                                                case 1:
+                                                    $("#selectConfirmAcc").attr("class", "dropdown-item active");
+                                                    $("#selectConfirmAcc").attr("onclick", "updateSearch(['confirm', 'page'], [null, null], many=true)");
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        </script>
+                                    </div>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="tbody">
@@ -72,19 +144,16 @@
                             <td>{{row.filename}}</td>
                             {% endif %}
                             <td>
-                                <div class="d-flex">
+                                <div class="d-flex justify-content-center">
+                                    {% if row.gif_url %}
                                     <button type="button" class="m-1 btn btn-outline-primary btn-sm" data-toggle="modal"
                                         data-target="#dicom-gif-modal-{{rowloop.index}}">View</button>
-                                    {% if row.gif_url %}
                                     <a class="m-1 btn btn-outline-primary btn-sm" href={{row.gif_url}} target="_blank"
                                         role="button" download="{{row.gif_name}}">Download</a>
                                     {% else %}
-                                    <a class="m-1 btn btn-outline-secondary btn-sm disabled" area-disabled="true"
-                                        href={{row.gif_url}} target="_blank" role="button">
-                                        Download
-                                    </a>
+                                    <a class="m-1 btn btn-outline-secondary btn-sm disabled" area-disabled="true">
+                                        NO DICOM FILE</a>
                                     {% endif %}
-
                                     <div class="modal fade dicom-gif-modal" id="dicom-gif-modal-{{rowloop.index}}"
                                         tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                         aria-hidden="true">
@@ -100,7 +169,13 @@
                                                     NO DICOM FILE IN DATABASE
                                                 </div>
                                                 {% endif %}
-                                                <div class="modal-footer">
+                                                <div class="modal-footer d-flex justify-content-between">
+                                                    <span>
+                                                        <button type="button" class="btn btn-success btn-sm"
+                                                            onclick="checkAnnotate('{{row.device}}', '{{row.filename}}', true)">Accept</button>
+                                                        <button class=" btn btn-danger btn-sm"
+                                                            onclick="checkAnnotate('{{row.device}}', '{{row.filename}}', false)">Reject</button>
+                                                    </span>
                                                     <button type="button" class="btn btn-outline-secondary btn-sm"
                                                         data-dismiss="modal">Close</button>
                                                 </div>
@@ -109,17 +184,24 @@
                                     </div>
                                 </div>
                             </td>
+                            <td class="text-center">
+                                {% if row.confirm == 1 %}
+                                <h3 class="badge badge-success">ACCEPTED</h3>
+                                {% elif row.confirm == 0 %}
+                                <h3 class="badge badge-secondary">NOT CHECKED</h3>
+                                {% else %}
+                                <h3 class="badge badge-danger">REJECTED</h3>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
                 <div class="d-flex justify-content-between mt-2">
-                    <form class="d-flex align-items-start">
+                    <form class="d-flex align-items-start"
+                        onsubmit="function(e) {e.preventDefault(); console.log('ahihi');}">
                         <div class="input-group d-flex align-items-center">
                             Show
-                            <!-- <div class="input-group-prepend">
-                                <button class="btn btn-primary btn-sm">Per page</button>
-                            </div> -->
                             <input style="font-size: small;" class="form-control col-2" name="per_page"
                                 value={{pagination.per_page}} />
                             entries
@@ -132,16 +214,12 @@
                             <p class="page-link" style="font-size: small;">......</p>
                         </li>
                         {% elif p == pagination.current_page %}
-                        <li class="page-item active">
-                            <a class="page-link"
-                                href="?page={{p}}&per_page={{pagination.per_page}}&date_order={{date_order}}"
-                                style="font-size: small;">{{p}}</a>
+                        <li class="page-item active" onclick="updateSearch('page', {{p}})">
+                            <a class="page-link" href="#" style="font-size: small;">{{p}}</a>
                         </li>
                         {% else %}
-                        <li class="page-item">
-                            <a class="page-link"
-                                href="?page={{p}}&per_page={{pagination.per_page}}&date_order={{date_order}}"
-                                style="font-size: small;">{{p}}</a>
+                        <li class="page-item" onclick="updateSearch('page', {{p}})">
+                            <a class="page-link" href="#" style="font-size: small;">{{p}}</a>
                         </li>
                         {% endif %}
                         {% endfor %}
@@ -162,9 +240,9 @@
                                     </div>
                                     <div class="dropdown-menu" aria-labelledby="overviewDateSort">
                                         <a class="dropdown-item"
-                                            href="?page=1&date_order=asc#nav-date-and-user">Ascending</a>
+                                            onclick="updateSearch(['date_order', 'page'], ['asc', null], many=true);">Ascending</a>
                                         <a class="dropdown-item"
-                                            href="?page=1&date_order=desc#nav-date-and-user">Descending</a>
+                                            onclick="updateSearch(['date_order', 'page'], ['desc', null], many=true);">Descending</a>
                                     </div>
                                 </div>
                             </th>
@@ -218,6 +296,59 @@
                 $('html,body').scrollTop(scrollmem);
             });
         });
+        // function to return updated search params
+        var params;
+        function updateSearch(key, value, many = false) {
+            params = new URLSearchParams(location.search);
+            if (!many) key = [key], value = [value]
+            for (let i = 0; i < key.length; ++i) {
+                if (value[i] === null)
+                    params.delete(key[i]);
+                else
+                    params.set(key[i], value[i]);
+            }
+            newSearch = `?${params.toString()}${location.hash}`;
+            window.location.href = newSearch;
+        }
+        // check annotate files
+        function checkAnnotate(device, filename, accept = false) {
+            const message = `${accept ? 'Accept' : 'Reject'} this annotation ?`
+            swal({
+                title: "Confirm",
+                text: message,
+                buttons: true,
+            }).then((confirm) => {
+                if (confirm) {
+                    const CONFIRM_URL = `${location.origin}${location.pathname}/${device}/${filename}/check`
+                    fetch(CONFIRM_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8'
+                        },
+                        body: JSON.stringify({ confirm: accept })
+                    })
+                        .then(res => {
+                            if (!res.ok) {
+                                swal({
+                                    text: "Failed",
+                                    icon: "error",
+                                    text: "Oops, something went wrong!!!\nPleaseTry again!"
+                                }).then(() => window.location.reload());
+                            } else {
+                                swal({
+                                    text: "Success",
+                                    icon: "success",
+                                    timer: 1000,
+                                    buttons: false,
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            }
+
+                        })
+                }
+            })
+        }
     </script>
 </body>
 

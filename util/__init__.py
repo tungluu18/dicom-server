@@ -54,6 +54,9 @@ def paginate(data, current_page=1, per_page=20):
     pages = [current_page - 2, current_page - 1,
              current_page, current_page + 1, current_page + 2]
     pages = list(filter(lambda x: 1 < x and x < n_pages, pages))
-    pages = [1] + ([] if pages[0] == 2 else [None]) + pages
-    pages = pages + ([] if pages[-1] == n_pages-1 else [None]) + [n_pages]
+    if not len(pages):
+        pages = list(range(1, n_pages+1))
+    else:
+        pages = [1] + ([] if pages[0] == 2 else [None]) + pages
+        pages = pages + ([] if pages[-1] == n_pages-1 else [None]) + [n_pages]
     return data[offset:offset+per_page], current_page, pages

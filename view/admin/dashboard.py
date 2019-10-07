@@ -10,37 +10,47 @@ import util
 _logger = logging.getLogger(__name__)
 
 
-@app.route(routing_table['admin']['dashboard'])
+@app.route(routing_table['admin']['dashboard'], methods=['GET'])
 def dashboard():
     dashboard_template = jinja_env.get_template('dashboard.html')
     # sort by date
-    date_order = request.args.get('date_order', 'asc', type=str)
+    date_order = request.args.get('date_order', 'desc', type=str)
     # pagination
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 20, type=int)
-    print(per_page)
+    per_page = request.args.get('per_page', 10, type=int)
+    per_page = min(per_page, 50)
+    # filters
+    device = request.args.get('device', None, type=str)
+    confirm = request.args.get('confirm', None, type=int)
+    dicom_avai = request.args.get('dicom_avai', 0, type=int)
     # load stat data
     overview, by_date_and_user = dicom_service.stat.stat_on_folder()
+    device_list = list(set([x['device'] for x in overview]))
+    extract_url_and_filename(overview)
+    if dicom_avai:
+        overview = list(filter(lambda x: x['gif_url'] is not None, overview))
+    if device:
+        overview = list(filter(lambda x: x['device'] == device, overview))
+    if confirm is not None:
+        check_file_confirmation(overview)
+        overview = list(filter(lambda x: x['confirm'] == confirm, overview))
+    # sort and paginate
     overview.sort(key=lambda x: x['date'], reverse=(date_order == 'desc'))
     by_date_and_user.sort(
         key=lambda x: x['date'], reverse=(date_order == 'desc'))
     overview, current_page, pages = util.paginate(overview, page, per_page)
-    # get json and gif 's url
-    for row in overview:
-        row['url'] = urllib.parse.urljoin(
-            request.host_url,
-            urllib.parse.quote('data/json_data/{}'.format(row['path']))
-        )
-    for row in overview:
-        deviceID = row['device']
-        filename = row['path'].split('/')[-1].replace('.json', '')
-        gif_url = dicom_service.view.get_gif_url(filename, deviceID)
-        row['filename'] = filename
-        row['gif_url'] = urllib.parse.urljoin(
-            request.host_url, urllib.parse.quote(gif_url)) if gif_url else None
-        row['gif_name'] = "{}__{}.gif".format(deviceID, filename)
+    if confirm is None:
+        check_file_confirmation(overview)
     return dashboard_template.render({
         'data': (overview, by_date_and_user),
+        'selectable_data': dict({
+            'devices': device_list,
+        }),
+        'filters': dict({
+            'device': device,
+            'confirm': confirm,
+            'dicom_avai': dicom_avai,
+        }),
         'pagination': dict({
             'current_page': current_page,
             'per_page': per_page,
@@ -49,3 +59,46 @@ def dashboard():
         'show_path': request.args.get('show_path', False, type=bool),
         'date_order': date_order,
     })
+
+
+@app.route(routing_table['admin']['dashboard'] + '/<device>/<filename>/check',
+           methods=['POST'])
+def check_annotate(device, filename):
+    confirm = request.json.get('confirm')
+    if confirm is None:
+        return "", 400
+    _logger.info(
+        'Check annotate file: {}/{} as {}'.format(device, filename, confirm))
+    try:
+        dicom_service.confirm.set_confirm_on_file(
+            device, filename, confirm,
+        )
+        return "Success"
+    except Exception as e:
+        _logger.error(e)
+        return "Error", 500
+
+
+def extract_url_and_filename(data):
+    # get json and gif 's url
+    for row in data:
+        row['url'] = urllib.parse.urljoin(
+            request.host_url,
+            urllib.parse.quote('data/json_data/{}'.format(row['path']))
+        )
+    for row in data:
+        deviceID = row['device']
+        filename = row['path'].split('/')[-1].replace('.json', '')
+        gif_url = dicom_service.view.get_gif_url(filename, deviceID)
+        row['filename'] = filename
+        row['gif_url'] = urllib.parse.urljoin(
+            request.host_url, urllib.parse.quote(gif_url)) if gif_url else None
+        row['gif_name'] = "{}__{}.gif".format(deviceID, filename)
+
+
+def check_file_confirmation(data):
+    for row in data:
+        row['confirm'] = dicom_service.confirm.get_confirm_on_file(
+            row['device'], row['filename']
+        )
+    return data
