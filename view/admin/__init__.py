@@ -17,6 +17,7 @@ users_schema = UserSchema(many=True)
 templates_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = Environment(loader=FileSystemLoader(templates_dir))
 
+from view.admin import auth
 from view.admin import dashboard
 
 # @web.route(routing_table['admin']['homepage'])

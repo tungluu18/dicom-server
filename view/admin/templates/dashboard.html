@@ -5,20 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="shortcut icon" href="/static/cardiogram.png">
-    <link rel=stylesheet type=text/css href="/static/bootstrap.min.css">
+    <link rel="shortcut icon" href="/static/images/cardiogram.png">
+    <link rel=stylesheet type=text/css href="/static/css/bootstrap.min.css">
     <title>Dashboard</title>
-    <script src="/static/popper.min.js"></script>
-    <script src="/static/jquery-3.3.1.slim.min.js"></script>
-    <script src="/static/bootstrap.min.js"></script>
-    <script src="/static/sweetalert.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/jquery-3.3.1.slim.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/sweetalert.min.js"></script>
 </head>
 
 <body>
-    <div class="w-100 p-2 my-2 border-bottom page-header">
+    <div class="w-100 p-2 my-2 border-bottom page-header d-flex justify-content-between">
         <a href="?">
             <h3>Dashboard</h3>
         </a>
+        <div>
+            <a href="./logout" type="button" class="btn btn-danger btn-sm mx-4">Log out</a>
+        </div>
     </div>
     <div class="container">
         <nav class="my-2">
@@ -35,7 +38,7 @@
                     <thead>
                         <tr>
                             <th style="width: 15%;" class="th-sm" scope="col">User</th>
-                            <th class="th-sm" scope="col">
+                            <th style="width: nowrap;" class="th-sm" scope="col">
                                 <div class="dropdown">
                                     <div class="dropdown-toggle" id="deviceSelector" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
@@ -83,10 +86,12 @@
                                     <div class="dropdown-menu" aria-labelledby="dicomAvaiSelector">
                                         {% if filters.dicom_avai %}
                                         <a class="dropdown-item active" href="#"
-                                            onclick="updateSearch(['dicom_avai', 'page'], [null, null], many=true)">Only show available dicom files</a>
+                                            onclick="updateSearch(['dicom_avai', 'page'], [null, null], many=true)">Only
+                                            show available dicom files</a>
                                         {% else %}
                                         <a class="dropdown-item" href="#"
-                                            onclick="updateSearch(['dicom_avai', 'page'], [1, null], many=true)">Only show available dicom files</a>
+                                            onclick="updateSearch(['dicom_avai', 'page'], [1, null], many=true)">Only
+                                            show available dicom files</a>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -108,19 +113,19 @@
                                         <script>
                                             switch ({{filters.confirm}}) {
                                                 case -1:
-                                                    $("#selectConfirmRej").attr("class", "dropdown-item active");
-                                                    $("#selectConfirmRej").attr("onclick", "updateSearch(['confirm', 'page'], [null, null], many=true)");
-                                                    break;
+                                                $("#selectConfirmRej").attr("class", "dropdown-item active");
+                                                $("#selectConfirmRej").attr("onclick", "updateSearch(['confirm', 'page'], [null, null], many=true)");
+                                                break;
                                                 case 0:
-                                                    $("#selectConfirmNot").attr("class", "dropdown-item active");
-                                                    $("#selectConfirmNot").attr("onclick", "updateSearch(['confirm', 'page'], [null, null], many=true)");
-                                                    break;
+                                                $("#selectConfirmNot").attr("class", "dropdown-item active");
+                                                $("#selectConfirmNot").attr("onclick", "updateSearch(['confirm', 'page'], [null, null], many=true)");
+                                                break;
                                                 case 1:
-                                                    $("#selectConfirmAcc").attr("class", "dropdown-item active");
-                                                    $("#selectConfirmAcc").attr("onclick", "updateSearch(['confirm', 'page'], [null, null], many=true)");
-                                                    break;
+                                                $("#selectConfirmAcc").attr("class", "dropdown-item active");
+                                                $("#selectConfirmAcc").attr("onclick", "updateSearch(['confirm', 'page'], [null, null], many=true)");
+                                                break;
                                                 default:
-                                                    break;
+                                                break;
                                             }
                                         </script>
                                     </div>

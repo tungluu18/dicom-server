@@ -4,6 +4,7 @@ from flask import request
 
 from services import dicom_service
 from view.admin import app, jinja_env
+from view.admin.auth import authorize
 from view.routes import routing_table
 import util
 
@@ -11,6 +12,7 @@ _logger = logging.getLogger(__name__)
 
 
 @app.route(routing_table['admin']['dashboard'], methods=['GET'])
+@authorize
 def dashboard():
     dashboard_template = jinja_env.get_template('dashboard.html')
     # sort by date

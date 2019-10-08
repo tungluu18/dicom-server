@@ -22,7 +22,7 @@ CONFIRM_DATA_DIR = 'data/confirm_data'
 # DATABASE
 _DB_NAME = os.getenv('DB_NAME', 'dicom_app')
 _DB_USER = os.getenv('DB_USER', 'root')
-_DB_PWD =  os.getenv('DB_PWD', 'password')
+_DB_PWD = os.getenv('DB_PWD', 'password')
 _DB_HOST = os.getenv('DB_HOST', 'localhost')
 _DB_PORT = os.getenv('DB_PORT', '3306')
 
@@ -38,3 +38,6 @@ MAX_CONTENT_LENGTH = 1000 * 1024 * 1024
 
 SECRET_KEY = os.getenv('SECRET_KEY', "this_is_secret")
 JWT_EXP_TIME = 24 * 3600
+
+# ADMIN PASSWORD
+ADMIN_PASSWORD = ['w3fBvU5YlWss', 'cardio@hmi@uet']
