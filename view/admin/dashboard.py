@@ -89,8 +89,8 @@ def extract_url_and_filename(data):
             urllib.parse.quote('data/json_data/{}'.format(row['path']))
         )
     for row in data:
-        deviceID = row['device']
-        filename = row['path'].split('/')[-1].replace('.json', '')
+        deviceID = str(row['device'])
+        filename = str(row['path'].split('/')[-1].replace('.json', ''))
         gif_url = dicom_service.view.get_gif_url(filename, deviceID)
         row['filename'] = filename
         row['gif_url'] = urllib.parse.urljoin(
@@ -101,6 +101,6 @@ def extract_url_and_filename(data):
 def check_file_confirmation(data):
     for row in data:
         row['confirm'] = dicom_service.confirm.get_confirm_on_file(
-            row['device'], row['filename']
+            str(row['device']), str(row['filename'])
         )
     return data
