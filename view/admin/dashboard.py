@@ -25,6 +25,7 @@ def dashboard():
     device = request.args.get('device', None, type=str)
     confirm = request.args.get('confirm', None, type=int)
     dicom_avai = request.args.get('dicom_avai', 0, type=int)
+    n_chambers = request.args.get('n_chambers', None, type=str)
     # load stat data
     overview, by_date_and_user = dicom_service.stat.stat_on_folder()
     device_list = list(set([x['device'] for x in overview]))
@@ -33,6 +34,9 @@ def dashboard():
         overview = list(filter(lambda x: x['gif_url'] is not None, overview))
     if device:
         overview = list(filter(lambda x: x['device'] == device, overview))
+    if n_chambers:
+        overview = list(
+            filter(lambda x: x['nchamber'] == n_chambers, overview))
     if confirm is not None:
         check_file_confirmation(overview)
         overview = list(filter(lambda x: x['confirm'] == confirm, overview))
@@ -52,13 +56,14 @@ def dashboard():
             'device': device,
             'confirm': confirm,
             'dicom_avai': dicom_avai,
+            'n_chambers': n_chambers,
         }),
         'pagination': dict({
             'current_page': current_page,
             'per_page': per_page,
             'pages': pages,
         }),
-        'show_path': request.args.get('show_path', False, type=bool),
+        'show_details': request.args.get('show_details', False, type=bool),
         'date_order': date_order,
     })
 
@@ -67,13 +72,15 @@ def dashboard():
            methods=['POST'])
 def check_annotate(device, filename):
     confirm = request.json.get('confirm')
-    if confirm is None:
+    nchamber = request.json.get('nchamber')
+    if confirm is None or nchamber is None:
         return "", 400
-    _logger.info(
-        'Check annotate file: {}/{} as {}'.format(device, filename, confirm))
+    _logger.info('Check annotate file: {}/{} with {} chambers as {}'.format(
+        device, filename, nchamber, confirm
+    ))
     try:
         dicom_service.confirm.set_confirm_on_file(
-            device, filename, confirm,
+            device, filename, confirm, nchamber
         )
         return "Success"
     except Exception as e:

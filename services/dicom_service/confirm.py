@@ -20,15 +20,15 @@ def get_confirm_on_file(device, filename):
     return 0
 
 
-def set_confirm_on_file(device, filename, confirm):
+def set_confirm_on_file(device, filename, confirm, nchamber):
     confirm_file_path = os.path.abspath(os.path.join(CONFIRM_DATA_DIR, device))
     os.makedirs(confirm_file_path, exist_ok=True)
     try:
         fw = open('{}/{}.json'.format(confirm_file_path, filename), "w")
         if confirm:
-            fw.write(json.dumps({'checked': 1}))
+            fw.write(json.dumps({'checked': 1, 'nchamber': nchamber}))
         else:
-            fw.write(json.dumps({'checked': -1}))
+            fw.write(json.dumps({'checked': -1, 'nchamber': nchamber}))
         fw.close()
     except Exception as e:
         _logger.error(e)

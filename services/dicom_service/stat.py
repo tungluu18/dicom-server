@@ -61,6 +61,7 @@ def count_annotated_frames(data_obj):
 
     return cnt
 
+
 def get_nchamber(data_obj):
     if "diagnosis" in data_obj:
         diagnosis = data_obj["diagnosis"]
@@ -68,9 +69,11 @@ def get_nchamber(data_obj):
             return diagnosis["chamber"]
     return "LABEL"
 
+
 def get_nframe_nchamber(x):
     o = json.load(open(x, "r"))
     return count_annotated_frames(o), get_nchamber(o)
+
 
 def get_user_map():
     users = User.query.all()
@@ -108,7 +111,7 @@ def stat_on_folder(force=False, dest_folder=ANNOTATION_FOLDER_DEFAULT):
             return stat_on_folder(force=True, dest_folder=dest_folder)
         # select lastest csv file to return stat data
         last_stats_file = max(stats_file_list, key=get_timestamp)
-        df = pd.read_csv(last_stats_file, dtype={"device": str})
+        df = pd.read_csv(last_stats_file, dtype={"device": str, "path": str})
         overview = df.to_dict('records')
 
         last_day_man_stats_file = max(
