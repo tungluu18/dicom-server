@@ -38,7 +38,7 @@
                     <thead>
                         <tr>
                             {% if show_details %}
-                            <th style="width: 15%;" class="th-sm" scope="col">User</th>
+                            <th style="white-space: nowrap;" class="th-sm" scope="col">User</th>
                             <th style="white-space: nowrap;" class="th-sm" scope="col">
                                 <div class="dropdown">
                                     <div class="dropdown-toggle" id="deviceSelector" data-toggle="dropdown"
@@ -171,7 +171,7 @@
                         <tr>
                             {% set rowloop = loop %}
                             {% if show_details %}
-                            <td>{{row.user}}</td>
+                            <td style="white-space: nowrap;">{{row.user}}</td>
                             <td>{{row.device}}</td>
                             {% endif %}
                             <td>{{row.date}}</td>
