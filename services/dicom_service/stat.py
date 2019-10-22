@@ -61,11 +61,16 @@ def count_annotated_frames(data_obj):
 
     return cnt
 
+def get_nchamber(data_obj):
+    if "diagnosis" in data_obj:
+        diagnosis = data_obj["diagnosis"]
+        if "chamber" in diagnosis:
+            return diagnosis["chamber"]
+    return "LABEL"
 
-def get_nframe(x):
+def get_nframe_nchamber(x):
     o = json.load(open(x, "r"))
-    return count_annotated_frames(o)
-
+    return count_annotated_frames(o), get_nchamber(o)
 
 def get_user_map():
     users = User.query.all()
@@ -124,7 +129,14 @@ def stat_on_folder(force=False, dest_folder=ANNOTATION_FOLDER_DEFAULT):
         file_list = [os.path.abspath(x) for x in file_list]
         dest_folder = os.path.abspath(dest_folder)
 
-        nframe = [get_nframe(x) for x in file_list]
+        # nframe = [get_nframe(x) for x in file_list]
+        n_frame_n_chamber = [get_nframe_nchamber(x) for x in file_list]
+        nframe = []
+        nchamber = []
+        for value in n_frame_n_chamber:
+            nframe.append(value[0])
+            nchamber.append(value[1])
+
         device = [get_device(x, dest_folder) for x in file_list]
         timestamp = [get_timestamp(x) for x in file_list]
         user = [get_user(user_map, d) for d in device]
@@ -133,6 +145,7 @@ def stat_on_folder(force=False, dest_folder=ANNOTATION_FOLDER_DEFAULT):
             'user': user,
             'device': device,
             'date': [get_date(x) for x in timestamp],
+            'nchamber': nchamber,
             'nframe': nframe,
             'dicoms': count,
             'path': [get_relative_path(x, dest_folder) for x in file_list],
