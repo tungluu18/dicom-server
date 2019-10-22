@@ -33,7 +33,7 @@
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
+            <div class="d-table tab-pane fade show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
                 <table class="table table-sm table-striped table-hover table-bordered">
                     <thead>
                         <tr>
@@ -86,27 +86,31 @@
                                         Chambers
                                     </div>
                                     <div class="dropdown-menu" aria-labelledby="chambersSelector">
-                                        {% if filters.n_chambers == '2C' %}
-                                        <a class="dropdown-item active" href="#"
-                                            onclick="updateSearch(['n_chambers', 'page'], [null, null], many=true)">2C</a>
-                                        {% else %}
-                                        <a class="dropdown-item" href="#"
+                                        <a class="dropdown-item" id="nchamberSelectorNone" href="#"
+                                            onclick="updateSearch(['n_chambers', 'page'], [-1, null], many=true)">None</a>
+                                        <a class="dropdown-item" id="nchamberSelector2C" href="#"
                                             onclick="updateSearch(['n_chambers', 'page'], ['2C', null], many=true)">2C</a>
-                                        {% endif %}
-                                        {% if filters.n_chambers == '3C' %}
-                                        <a class="dropdown-item active" href="#"
-                                            onclick="updateSearch(['n_chambers', 'page'], [null, null], many=true)">3C</a>
-                                        {% else %}
-                                        <a class="dropdown-item" href="#"
+                                        <a class="dropdown-item" id="nchamberSelector3C" href="#"
                                             onclick="updateSearch(['n_chambers', 'page'], ['3C', null], many=true)">3C</a>
-                                        {% endif %}
-                                        {% if filters.n_chambers == '4C' %}
-                                        <a class="dropdown-item active" href="#"
-                                            onclick="updateSearch(['n_chambers', 'page'], [null, null], many=true)">4C</a>
-                                        {% else %}
-                                        <a class="dropdown-item" href="#"
+                                        <a class="dropdown-item" id="nchamberSelector4C" href="#"
                                             onclick="updateSearch(['n_chambers', 'page'], ['4C', null], many=true)">4C</a>
-                                        {% endif %}
+                                        <script>
+                                            var nchamber = '{{ filters.n_chambers }}';
+                                            console.log('DEBUG', nchamber);
+                                            if (nchamber == '-1') {
+                                                $("#nchamberSelectorNone").attr("class", "dropdown-item active");
+                                                $("#nchamberSelectorNone").attr("onclick", "updateSearch(['n_chambers', 'page'], [null, null], many=true)");
+                                            } else if (nchamber == '2C') {
+                                                $("#nchamberSelector2C").attr("class", "dropdown-item active");
+                                                $("#nchamberSelector2C").attr("onclick", "updateSearch(['n_chambers', 'page'], [null, null], many=true)");
+                                            } else if (nchamber == '3C') {
+                                                $("#nchamberSelector3C").attr("class", "dropdown-item active");
+                                                $("#nchamberSelector3C").attr("onclick", "updateSearch(['n_chambers', 'page'], [null, null], many=true)");
+                                            } else if (nchamber == '4C') {
+                                                $("#nchamberSelector4C").attr("class", "dropdown-item active");
+                                                $("#nchamberSelector4C").attr("onclick", "updateSearch(['n_chambers', 'page'], [null, null], many=true)");
+                                            }
+                                        </script>
                                     </div>
                                 </div>
                             </th>

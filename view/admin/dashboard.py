@@ -28,13 +28,18 @@ def dashboard():
     n_chambers = request.args.get('n_chambers', None, type=str)
     # load stat data
     overview, by_date_and_user = dicom_service.stat.stat_on_folder()
+    for row in overview:
+        if row['nchamber'] in ['LABEL', -1]:
+            row['nchamber'] = None
     device_list = list(set([x['device'] for x in overview]))
     extract_url_and_filename(overview)
     if dicom_avai:
         overview = list(filter(lambda x: x['gif_url'] is not None, overview))
     if device:
         overview = list(filter(lambda x: x['device'] == device, overview))
-    if n_chambers:
+    if n_chambers == '-1':
+        overview = list(filter(lambda x: x['nchamber'] is None, overview))
+    elif n_chambers:
         overview = list(
             filter(lambda x: x['nchamber'] == n_chambers, overview))
     if confirm is not None:
