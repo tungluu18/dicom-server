@@ -29,7 +29,7 @@ def dashboard():
     # load stat data
     overview, by_date_and_user = dicom_service.stat.stat_on_folder()
     for row in overview:
-        if row['nchamber'] in ['LABEL', -1]:
+        if row['nchamber'] in ['LABEL', '-1']:
             row['nchamber'] = None
     device_list = list(set([x['device'] for x in overview]))
     extract_url_and_filename(overview)
