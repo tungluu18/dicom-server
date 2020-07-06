@@ -406,7 +406,7 @@
         // check annotate files
         function checkAnnotate(device, filename, accept = false) {
             const nchamber = $(`[id='select-n-chambers-${device}-${filename}']`).val()
-            const message = `Number of chambers is ${nchamber[0]}\n\n${accept ? 'Accept' : 'Reject'} this annotation ?`
+            const message = `Type of view: ${nchamber}\n\n${accept ? 'Accept' : 'Reject'} this annotation ?`
             swal({
                 title: "Confirm",
                 text: message,
