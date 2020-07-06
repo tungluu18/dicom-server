@@ -219,24 +219,47 @@
                                                         <form class="mx-1">
                                                             <select class="form-control form-control-sm"
                                                                 id="select-n-chambers-{{row.device}}-{{row.filename}}">
+
+
+
+                                                                {% if row.nchamber == 'PTS_S' %}
+                                                                <option value="PTS_S" selected="selected">PTS_S
+                                                                </option>
+                                                                {% else %}
+                                                                <option value="PTS_S">PTS_S</option>
+                                                                {% endif %}
+
+                                                                {% if row.nchamber == 'PTS_L' %}
+                                                                <option value="PTS_L" selected="selected">PTS_L
+                                                                </option>
+                                                                {% else %}
+                                                                <option value="PTS_L">PTS_L</option>
+                                                                {% endif %}
+
+
                                                                 {% if row.nchamber == '2C' %}
                                                                 <option value="2C" selected="selected">2 chambers
                                                                 </option>
                                                                 {% else %}
                                                                 <option value="2C">2 chambers</option>
                                                                 {% endif %}
+
+
+
                                                                 {% if row.nchamber == '3C' %}
                                                                 <option value="3C" selected="selected">3 chambers
                                                                 </option>
                                                                 {% else %}
                                                                 <option value="3C">3 chambers</option>
                                                                 {% endif %}
+
                                                                 {% if row.nchamber == '4C' %}
                                                                 <option value="4C" selected="selected">4 chambers
                                                                 </option>
                                                                 {% else %}
                                                                 <option value="4C">4 chambers</option>
                                                                 {% endif %}
+
                                                             </select>
                                                         </form>
                                                         <span>
