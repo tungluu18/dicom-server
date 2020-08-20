@@ -40,4 +40,4 @@ SECRET_KEY = os.getenv('SECRET_KEY', "this_is_secret")
 JWT_EXP_TIME = 24 * 3600
 
 # ADMIN PASSWORD
-ADMIN_PASSWORD = ['w3fBvU5YlWss', 'cardio@hmi@uet']
+ADMIN_PASSWORD = ['w3fBvU5YlWss', 'aicardio@ailab@uet']

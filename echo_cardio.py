@@ -52,6 +52,7 @@ app.logger.handlers.extend(_logger.handlers)
 
 # scheduling jobs
 def job1():
+#     print("RUN ECACH TIME: {}".format(datetime.datetime.now()))
     try:
         dicom_service.stat.stat_on_folder(force=True)
         print("Success Executed Stat at %s." % datetime.datetime.now())
