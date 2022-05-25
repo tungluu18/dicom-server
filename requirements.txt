@@ -23,7 +23,7 @@ marshmallow-sqlalchemy==0.16.0
 numpy==1.17.2
 pandas==0.25.1
 pycparser==2.19
-PyJWT==1.7.1
+PyJWT==2.4.0
 PyMySQL==0.9.3
 pyrsistent==0.14.11
 python-dateutil==2.8.0
